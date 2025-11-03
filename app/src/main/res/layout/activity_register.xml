@@ -34,17 +34,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/register_logo" />
 
-    <!-- Email Input -->
+    <!-- Name Input -->
     <EditText
-        android:id="@+id/edit_text_register_email"
+        android:id="@+id/edit_text_register_name"
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="32dp"
         android:background="@drawable/edit_text_background"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
+        android:hint="Name"
+        android:inputType="textPersonName"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:textColor="@color/white"
@@ -52,6 +52,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/register_title" />
+
+    <!-- Email Input -->
+    <EditText
+        android:id="@+id/edit_text_register_email"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edit_text_background"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:textColor="@color/white"
+        android:textColorHint="#A8A3B5"
+        app:layout_constraintEnd_toEndOf="@+id/edit_text_register_name"
+        app:layout_constraintStart_toStartOf="@+id/edit_text_register_name"
+        app:layout_constraintTop_toBottomOf="@id/edit_text_register_name" />
 
     <!-- Password Input -->
     <EditText

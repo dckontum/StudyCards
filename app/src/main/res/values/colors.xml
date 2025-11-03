@@ -13,4 +13,5 @@
     <color name="colorPrimaryDark">#512DA8</color>
     <color name="colorAccent">#7C4DFF</color>
     <color name="splash_background">#F3E5F5</color>
+    <color name="deep_pink">#E91E63</color>
 </resources>

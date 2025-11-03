@@ -13,21 +13,21 @@
         android:theme="@style/Theme.MyApplication">
 
         <activity
-            android:name=".RegisterActivity"
+            android:name=".ui.RegisterActivity"
             android:exported="false"
             android:theme="@style/Theme.StudyCards" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.LoginActivity"
             android:exported="false" 
             android:theme="@style/Theme.StudyCards"/>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true" />
 
         <activity
-            android:name=".SplashActivity"
+            android:name=".ui.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.StudyCards">
             <intent-filter>
