@@ -2,6 +2,7 @@ package com.example.myapplication.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -27,14 +28,22 @@ import java.util.List;
 
 public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.DeckViewHolder> {
 
+    // Interface to communicate with MainActivity
+    public interface OnDeckEditListener {
+        void onEditDeck(int deckId);
+    }
+
     private List<Deck> deckList;
     private Context context;
     private DatabaseHelper dbHelper;
+    private OnDeckEditListener editListener; // Listener instance
 
-    public DeckAdapter(Context context, List<Deck> deckList) {
+    // Updated constructor to accept the listener
+    public DeckAdapter(Context context, List<Deck> deckList, OnDeckEditListener listener) {
         this.context = context;
         this.deckList = deckList;
         this.dbHelper = new DatabaseHelper(context);
+        this.editListener = listener;
     }
 
     @NonNull
@@ -71,7 +80,14 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.DeckViewHolder
         PopupMenu popup = new PopupMenu(context, view);
         popup.getMenuInflater().inflate(R.menu.deck_options_menu, popup.getMenu());
         popup.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == R.id.action_delete_deck) {
+            int itemId = item.getItemId();
+            if (itemId == R.id.action_edit_deck) {
+                // Instead of starting activity, call the listener
+                if (editListener != null) {
+                    editListener.onEditDeck(deck.getId());
+                }
+                return true;
+            } else if (itemId == R.id.action_delete_deck) {
                 showDeleteConfirmationDialog(deck, position);
                 return true;
             }
