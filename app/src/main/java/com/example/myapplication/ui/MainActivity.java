@@ -20,20 +20,29 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+// Implement the listener interface
+public class MainActivity extends AppCompatActivity implements DeckAdapter.OnDeckEditListener {
 
     private RecyclerView decksRecyclerView;
     private DeckAdapter deckAdapter;
     private DatabaseHelper dbHelper;
     private List<Deck> deckList;
 
-    // Launcher to handle the result from AddDeckActivity
+    // Launcher for adding a deck
     private final ActivityResultLauncher<Intent> addDeckLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK) {
-                    // Refresh the deck list if a new deck was added
-                    loadDecks();
+                    loadDecks(); // Refresh list on successful add
+                }
+            });
+
+    // New launcher specifically for editing a deck
+    private final ActivityResultLauncher<Intent> editDeckLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    loadDecks(); // Refresh list on successful edit
                 }
             });
 
@@ -42,18 +51,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // --- Toolbar Setup ---
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
 
-        // --- Database and RecyclerView Setup ---
         dbHelper = new DatabaseHelper(this);
         decksRecyclerView = findViewById(R.id.decks_recycler_view);
         decksRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         loadDecks();
 
-        // --- FAB Setup ---
         FloatingActionButton fab = findViewById(R.id.fab_add_deck);
         fab.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, AddDeckActivity.class);
@@ -64,8 +70,17 @@ public class MainActivity extends AppCompatActivity {
     private void loadDecks() {
         int currentUserId = 1; 
         deckList = dbHelper.getAllDecks(currentUserId);
-        deckAdapter = new DeckAdapter(this, deckList);
+        // Pass 'this' as the listener when creating the adapter
+        deckAdapter = new DeckAdapter(this, deckList, this);
         decksRecyclerView.setAdapter(deckAdapter);
+    }
+
+    // This method is called by the adapter when the edit button is clicked
+    @Override
+    public void onEditDeck(int deckId) {
+        Intent intent = new Intent(this, EditDeckActivity.class);
+        intent.putExtra(EditDeckActivity.EXTRA_DECK_ID, deckId);
+        editDeckLauncher.launch(intent); // Use the new launcher
     }
 
     @Override
