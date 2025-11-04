@@ -2,54 +2,75 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    app:cardBackgroundColor="#2C2A3C"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="130dp"
         android:padding="16dp">
 
+        <!-- More Options Button -->
         <ImageView
-            android:id="@+id/deck_icon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_launcher_background" 
-            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/deck_options_menu"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_more_vert"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Deck Icon (moved below title) -->
+        <ImageView
+            android:id="@+id/deck_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/ic_science"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/deck_name" />
+        
         <TextView
             android:id="@+id/deck_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="Biology Chapter 5"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/deck_icon"
-            app:layout_constraintTop_toTopOf="@id/deck_icon" />
+            android:text="Chemistry Basics"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/deck_options_menu"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="8dp"/>
 
         <TextView
             android:id="@+id/deck_description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Cellular respiration"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-            app:layout_constraintEnd_toEndOf="@id/deck_name"
-            app:layout_constraintStart_toStartOf="@id/deck_name"
-            app:layout_constraintTop_toBottomOf="@id/deck_name" />
+            android:layout_marginStart="12dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="Periodic table elements."
+            android:textColor="#C9C5D5"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/deck_icon"
+            app:layout_constraintTop_toTopOf="@id/deck_icon"/>
 
         <TextView
             android:id="@+id/deck_card_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="24 Cards"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_marginTop="4dp"
+            android:text="25 Cards"
+            android:textColor="#B3A5F7"
+            android:textSize="12sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@id/deck_description"
             app:layout_constraintTop_toBottomOf="@id/deck_description" />
 

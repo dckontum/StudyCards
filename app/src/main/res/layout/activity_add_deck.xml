@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_splash"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".ui.AddDeckActivity">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/add_deck_appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:elevation="0dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/add_deck_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:title="Create Deck"
+                app:titleTextColor="@color/white" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <!-- Deck Name & Description -->
+        <EditText
+            android:id="@+id/edit_text_deck_name"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Deck Name (required)"
+            android:inputType="textCapWords"
+            android:paddingHorizontal="20dp"
+            android:textColor="@color/white"
+            android:textColorHint="#A8A3B5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/add_deck_appbar" />
+
+        <EditText
+            android:id="@+id/edit_text_deck_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/edit_text_background"
+            android:gravity="top"
+            android:hint="Description (optional)"
+            android:inputType="textMultiLine"
+            android:minHeight="80dp"
+            android:padding="20dp"
+            android:textColor="@color/white"
+            android:textColorHint="#A8A3B5"
+            app:layout_constraintEnd_toEndOf="@id/edit_text_deck_name"
+            app:layout_constraintStart_toStartOf="@id/edit_text_deck_name"
+            app:layout_constraintTop_toBottomOf="@id/edit_text_deck_name" />
+
+        <!-- Preview Card -->
+        <TextView
+            android:id="@+id/preview_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Preview"
+            android:textColor="#E6E0FF"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/edit_text_deck_description"
+            app:layout_constraintTop_toBottomOf="@id/edit_text_deck_description" />
+
+        <include
+            android:id="@+id/preview_deck_item"
+            layout="@layout/item_deck"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="@id/edit_text_deck_description"
+            app:layout_constraintStart_toStartOf="@id/edit_text_deck_description"
+            app:layout_constraintTop_toBottomOf="@id/preview_label" />
+
+        <!-- Icon Picker -->
+        <TextView
+            android:id="@+id/icon_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Choose Icon"
+            android:textColor="#E6E0FF"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/preview_deck_item"
+            app:layout_constraintTop_toBottomOf="@id/preview_deck_item" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/icon_recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2"
+            app:layout_constraintEnd_toEndOf="@id/preview_deck_item"
+            app:layout_constraintStart_toStartOf="@id/preview_deck_item"
+            app:layout_constraintTop_toBottomOf="@id/icon_label" />
+
+        <!-- Color Picker -->
+        <TextView
+            android:id="@+id/color_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Choose Color"
+            android:textColor="#E6E0FF"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/icon_recycler_view"
+            app:layout_constraintTop_toBottomOf="@id/icon_recycler_view" />
+
+        <HorizontalScrollView
+            android:id="@+id/color_scroll_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:scrollbars="none"
+            app:layout_constraintEnd_toEndOf="@id/icon_recycler_view"
+            app:layout_constraintStart_toStartOf="@id/icon_recycler_view"
+            app:layout_constraintTop_toBottomOf="@id/color_label">
+
+            <LinearLayout
+                android:id="@+id/color_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <!-- Save Button -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_save_deck"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/gradient_button_background"
+            android:enabled="false" 
+            android:text="Save Deck"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@id/color_scroll_view"
+            app:layout_constraintStart_toStartOf="@id/color_scroll_view"
+            app:layout_constraintTop_toBottomOf="@id/color_scroll_view" 
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
