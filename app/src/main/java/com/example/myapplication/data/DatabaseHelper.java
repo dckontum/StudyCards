@@ -206,6 +206,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_DECKS, null, values);
     }
 
+    public void addFlashcard(Flashcard flashcard, int deckId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_CARD_FRONT, flashcard.getFrontContent());
+        values.put(KEY_CARD_BACK, flashcard.getBackContent());
+        values.put(KEY_CARD_IS_FAVORITE, flashcard.isFavorite() ? 1 : 0);
+        values.put(KEY_CARD_DECK_ID, deckId);
+        db.insert(TABLE_FLASHCARDS, null, values);
+    }
+
+    public void updateFlashcard(int flashcardId, String question, String answer) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_CARD_FRONT, question);
+        values.put(KEY_CARD_BACK, answer);
+        db.update(TABLE_FLASHCARDS, values, KEY_CARD_ID + " = ?", new String[]{String.valueOf(flashcardId)});
+    }
+
+    public void deleteFlashcard(int flashcardId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_FLASHCARDS, KEY_CARD_ID + " = ?", new String[]{String.valueOf(flashcardId)});
+    }
+
     public boolean checkUser(String email, String password) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_USERS, new String[]{KEY_USER_ID}, KEY_USER_EMAIL + "=? AND " + KEY_USER_PASSWORD + "=?", new String[]{email, password}, null, null, null);

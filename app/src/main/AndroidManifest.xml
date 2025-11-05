@@ -29,7 +29,7 @@
 
         <activity
             android:name=".ui.LoginActivity"
-            android:exported="false" 
+            android:exported="false"
             android:theme="@style/Theme.StudyCards"/>
 
         <activity
@@ -46,6 +46,30 @@
 
         <activity
             android:name=".ui.StudyDeckActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.DeckDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.AddFlashcardsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.EditFlashcardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.QuizActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.QuizResultsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.ReviewQuizActivity"
             android:exported="false" />
 
         <activity

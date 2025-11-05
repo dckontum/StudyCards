@@ -10,4 +10,13 @@
         <item name="android:navigationBarColor">#141021</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
+
+    <!-- Custom Toolbar Theme for white icons and text -->
+    <style name="AppTheme.Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <!-- This sets the color of the menu icons (search, etc.) to white -->
+        <item name="colorControlNormal">@android:color/white</item>
+        <!-- This sets the color of the title text -->
+        <item name="android:textColorPrimary">@android:color/white</item>
+    </style>
+
 </resources>

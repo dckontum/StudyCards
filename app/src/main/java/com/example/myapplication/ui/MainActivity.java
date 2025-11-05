@@ -1,50 +1,53 @@
 package com.example.myapplication.ui;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.DatabaseHelper;
 import com.example.myapplication.model.Deck;
-import com.example.myapplication.ui.DeckAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
-// Implement the listener interface
-public class MainActivity extends AppCompatActivity implements DeckAdapter.OnDeckEditListener {
+public class MainActivity extends AppCompatActivity {
 
     private RecyclerView decksRecyclerView;
     private DeckAdapter deckAdapter;
     private DatabaseHelper dbHelper;
     private List<Deck> deckList;
 
-    // Launcher for adding a deck
     private final ActivityResultLauncher<Intent> addDeckLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK) {
-                    loadDecks(); // Refresh list on successful add
+                    loadDecks();
                 }
             });
 
-    // New launcher specifically for editing a deck
     private final ActivityResultLauncher<Intent> editDeckLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == RESULT_OK) {
-                    loadDecks(); // Refresh list on successful edit
+                    loadDecks();
                 }
             });
 
@@ -59,8 +62,6 @@ public class MainActivity extends AppCompatActivity implements DeckAdapter.OnDec
         dbHelper = new DatabaseHelper(this);
         decksRecyclerView = findViewById(R.id.decks_recycler_view);
         decksRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-
-        loadDecks();
 
         FloatingActionButton fab = findViewById(R.id.fab_add_deck);
         fab.setOnClickListener(view -> {
@@ -82,32 +83,63 @@ public class MainActivity extends AppCompatActivity implements DeckAdapter.OnDec
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadDecks();
+    }
+
     private void loadDecks() {
-        int currentUserId = 1; 
+        int currentUserId = 1;
         deckList = dbHelper.getAllDecks(currentUserId);
-        // Pass 'this' as the listener when creating the adapter
-        deckAdapter = new DeckAdapter(this, deckList, this);
+        deckAdapter = new DeckAdapter(this, deckList);
         decksRecyclerView.setAdapter(deckAdapter);
     }
 
-    // This method is called by the adapter when the edit button is clicked
     @Override
-    public void onEditDeck(int deckId) {
-        Intent intent = new Intent(this, EditDeckActivity.class);
-        intent.putExtra(EditDeckActivity.EXTRA_DECK_ID, deckId);
-        editDeckLauncher.launch(intent); // Use the new launcher
-    }
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.action_search) {
-            Toast.makeText(this, "Search clicked", Toast.LENGTH_SHORT).show();
-            return true;
-        } else if (itemId == R.id.action_settings) {
-            Toast.makeText(this, "Settings clicked", Toast.LENGTH_SHORT).show();
-            return true;
+        // --- Force-styling the SearchView to be white ---
+
+        // 1. Style the query text (the text you type)
+        EditText searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        if (searchEditText != null) {
+            searchEditText.setTextColor(Color.WHITE);
+            searchEditText.setHintTextColor(Color.GRAY);
         }
-        return super.onOptionsItemSelected(item);
+
+        // 2. Style the search icon
+        ImageView searchIcon = searchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
+        if (searchIcon != null) {
+            searchIcon.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
+        }
+
+        // 3. Style the close button ("X")
+        ImageView closeIcon = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
+        if (closeIcon != null) {
+            closeIcon.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
+        }
+
+        // --- End of styling ---
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (deckAdapter != null) {
+                    deckAdapter.getFilter().filter(newText);
+                }
+                return true;
+            }
+        });
+
+        return true;
     }
 }

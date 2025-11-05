@@ -25,7 +25,7 @@ public class StudyDeckActivity extends AppCompatActivity {
     public static final String EXTRA_DECK_ID = "com.example.myapplication.ui.EXTRA_DECK_ID";
     public static final String EXTRA_DECK_NAME = "com.example.myapplication.ui.EXTRA_DECK_NAME";
 
-    private TextView deckTitleTextView;
+    private TextView deckTitleTextView, cardCounterTextView;
     private ProgressBar studyProgressBar;
     private TextView cardFrontTextView, cardBackTextView;
     private MaterialCardView cardFront, cardBack;
@@ -61,6 +61,7 @@ public class StudyDeckActivity extends AppCompatActivity {
         backButton = findViewById(R.id.back_button);
         favoriteIconFront = findViewById(R.id.favorite_icon_front);
         favoriteIconBack = findViewById(R.id.favorite_icon_back);
+        cardCounterTextView = findViewById(R.id.card_counter_text);
 
         deckTitleTextView.setText(deckName);
 
@@ -98,7 +99,8 @@ public class StudyDeckActivity extends AppCompatActivity {
             boolean isFavorite = !currentCard.isFavorite();
             currentCard.setFavorite(isFavorite);
             dbHelper.setFlashcardFavoriteStatus(currentCard.getId(), isFavorite);
-            updateFavoriteIcon(isFavorite, (ImageView) v);
+            updateFavoriteIcon(isFavorite, favoriteIconFront);
+            updateFavoriteIcon(isFavorite, favoriteIconBack);
 
             Animator pop = AnimatorInflater.loadAnimator(this, R.animator.heart_pop);
             pop.setTarget(v);
@@ -119,6 +121,8 @@ public class StudyDeckActivity extends AppCompatActivity {
             updateFavoriteIcon(currentCard.isFavorite(), favoriteIconFront);
             updateFavoriteIcon(currentCard.isFavorite(), favoriteIconBack);
 
+            cardCounterTextView.setText((currentCardIndex + 1) + " of " + flashcards.size());
+
             if (!isFront) {
                 flipCard();
             }
@@ -128,7 +132,7 @@ public class StudyDeckActivity extends AppCompatActivity {
     private void updateFavoriteIcon(boolean isFavorite, ImageView favoriteIcon) {
         if (isFavorite) {
             favoriteIcon.setImageResource(R.drawable.ic_favorite);
-            favoriteIcon.setColorFilter(Color.RED);
+            favoriteIcon.setColorFilter(Color.rgb(255, 105, 180)); // Hot Pink
         } else {
             favoriteIcon.setImageResource(R.drawable.ic_favorite_border);
             favoriteIcon.clearColorFilter();

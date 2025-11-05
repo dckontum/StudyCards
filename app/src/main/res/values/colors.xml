@@ -25,4 +25,8 @@
     <!-- Bottom Navigation Colors -->
     <color name="bottom_nav_selected">#D1C4E9</color>
     <color name="bottom_nav_unselected">#9E9E9E</color>
+
+    <!-- Quiz Colors -->
+    <color name="correct_green">#A5D6A7</color>
+    <color name="incorrect_red">#F2B8B5</color>
 </resources>

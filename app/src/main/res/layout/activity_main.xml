@@ -20,7 +20,8 @@
             android:layout_height="?attr/actionBarSize"
             app:title="StudyCards"
             app:titleTextColor="@color/white"
-            app:menu="@menu/main_menu" />
+            app:menu="@menu/main_menu"
+            android:theme="@style/AppTheme.Toolbar"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -29,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottom_navigation"
-        android:layout_below="@id/appbar"
+        android:layout_below="@+id/appbar"
         android:clipToPadding="false"
         android:padding="8dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"

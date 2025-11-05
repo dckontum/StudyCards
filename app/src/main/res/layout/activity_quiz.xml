@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1C1B1F"
+    android:padding="16dp"
+    tools:context=".ui.QuizActivity">
+
+    <!-- Top Bar with Progress and Close Button -->
+    <RelativeLayout
+        android:id="@+id/quiz_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp">
+
+        <ImageView
+            android:id="@+id/quiz_close_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_close"
+            app:tint="@android:color/white"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:id="@+id/quiz_progress_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#C9C5D5"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:text="Question 1 of 10"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
+
+    <!-- Question Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/question_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android.layout_below="@id/quiz_top_bar"
+        app:cardBackgroundColor="#2C2A3C"
+        app:cardCornerRadius="16dp"
+        android:layout_marginBottom="24dp">
+
+        <TextView
+            android:id="@+id/quiz_question_text"
+            android:layout_width="match_parent"
+            android.layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:gravity="center"
+            android:padding="24dp"
+            android:minHeight="150dp"
+            tools:text="What is the powerhouse of the cell?" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Answer Options -->
+    <LinearLayout
+        android:id="@+id/quiz_options_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/question_card"
+        android:orientation="vertical">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/quiz_option_a"
+            style="@style/Widget.App.QuizOptionButton"
+            tools:text="Mitochondria"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/quiz_option_b"
+            style="@style/Widget.App.QuizOptionButton"
+            tools:text="Nucleus"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/quiz_option_c"
+            style="@style/Widget.App.QuizOptionButton"
+            tools:text="Ribosome"/>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/quiz_option_d"
+            style="@style/Widget.App.QuizOptionButton"
+            tools:text="Chloroplast"/>
+
+    </LinearLayout>
+
+    <!-- Submit/Next Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/quiz_submit_button"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:text="Submit"
+        android:background="@drawable/button_gradient"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:backgroundTint="@null"
+        android:enabled="false"/>
+
+</RelativeLayout>

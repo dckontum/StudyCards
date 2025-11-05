@@ -125,7 +125,7 @@ public class StudyFlashcardActivity extends AppCompatActivity {
     private void updateFavoriteIcon(boolean isFavorite, ImageView favoriteIcon) {
         if (isFavorite) {
             favoriteIcon.setImageResource(R.drawable.ic_favorite);
-            favoriteIcon.setColorFilter(Color.RED);
+            favoriteIcon.setColorFilter(Color.rgb(255, 105, 180)); // Hot Pink
         } else {
             favoriteIcon.setImageResource(R.drawable.ic_favorite_border);
             favoriteIcon.clearColorFilter();
