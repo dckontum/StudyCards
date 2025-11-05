@@ -1,20 +1,24 @@
 package com.example.myapplication.model;
 
-public class Flashcard {
+import java.io.Serializable;
+
+public class Flashcard implements Serializable {
     private int id;
     private String frontContent;
     private String backContent;
-    private int deckId; // Foreign key to link with the Deck table
+    private int deckId;
+    private boolean isFavorite;
 
     // Constructors
     public Flashcard() {
     }
 
-    public Flashcard(int id, String frontContent, String backContent, int deckId) {
+    public Flashcard(int id, String frontContent, String backContent, int deckId, boolean isFavorite) {
         this.id = id;
         this.frontContent = frontContent;
         this.backContent = backContent;
         this.deckId = deckId;
+        this.isFavorite = isFavorite;
     }
 
     // Getters and Setters
@@ -48,5 +52,13 @@ public class Flashcard {
 
     public void setDeckId(int deckId) {
         this.deckId = deckId;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
     }
 }

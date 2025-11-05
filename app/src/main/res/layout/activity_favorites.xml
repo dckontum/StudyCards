@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#1C1B1F"
-    tools:context=".ui.MainActivity">
+    tools:context=".ui.FavoritesActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -14,39 +14,41 @@
         android:background="@android:color/transparent"
         app:elevation="0dp">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/main_toolbar"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="StudyCards"
-            app:titleTextColor="@color/white"
-            app:menu="@menu/main_menu" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_heart_filled"
+                app:tint="#E91E63" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Favorites"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/decks_recycler_view"
+        android:id="@+id/favorites_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_navigation"
         android:layout_below="@id/appbar"
-        android:clipToPadding="false"
+        android:layout_above="@+id/bottom_navigation"
         android:padding="8dp"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="2"
-        tools:listitem="@layout/item_deck" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_deck"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="72dp"
-        android:src="@drawable/ic_add"
-        app:backgroundTint="@color/colorAccent"
-        app:tint="@color/white"/>
+        android:clipToPadding="false"
+        tools:listitem="@layout/item_favorite_card" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

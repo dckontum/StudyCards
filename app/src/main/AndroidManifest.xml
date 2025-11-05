@@ -37,6 +37,18 @@
             android:exported="true" />
 
         <activity
+            android:name=".ui.FavoritesActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".ui.StudyFlashcardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.StudyDeckActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.StudyCards">

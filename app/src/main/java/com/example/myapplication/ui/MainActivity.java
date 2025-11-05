@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.data.DatabaseHelper;
 import com.example.myapplication.model.Deck;
+import com.example.myapplication.ui.DeckAdapter;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
@@ -64,6 +66,19 @@ public class MainActivity extends AppCompatActivity implements DeckAdapter.OnDec
         fab.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, AddDeckActivity.class);
             addDeckLauncher.launch(intent);
+        });
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.nav_home);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nav_home) {
+                return true;
+            } else if (item.getItemId() == R.id.nav_favorites) {
+                startActivity(new Intent(getApplicationContext(), FavoritesActivity.class));
+                overridePendingTransition(0, 0);
+                return true;
+            }
+            return false;
         });
     }
 
