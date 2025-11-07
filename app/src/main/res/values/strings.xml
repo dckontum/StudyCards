@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">StudyCards</string>
     <string name="title_favorites">Favorites</string>
+    <string name="profile_title">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="change_password">Change Password</string>
+    <string name="logout">Logout</string>
 </resources>

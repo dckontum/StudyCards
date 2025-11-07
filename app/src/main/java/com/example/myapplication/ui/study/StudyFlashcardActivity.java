@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.study;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;

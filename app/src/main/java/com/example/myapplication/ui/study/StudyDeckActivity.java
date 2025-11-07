@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.study;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
@@ -22,8 +22,8 @@ import java.util.List;
 
 public class StudyDeckActivity extends AppCompatActivity {
 
-    public static final String EXTRA_DECK_ID = "com.example.myapplication.ui.EXTRA_DECK_ID";
-    public static final String EXTRA_DECK_NAME = "com.example.myapplication.ui.EXTRA_DECK_NAME";
+    public static final String EXTRA_DECK_ID = "extra_deck_id";
+    public static final String EXTRA_DECK_NAME = "extra_deck_name";
 
     private TextView deckTitleTextView, cardCounterTextView;
     private ProgressBar studyProgressBar;

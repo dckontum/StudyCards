@@ -1,8 +1,9 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.adapter;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +16,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.cardview.widget.CardView;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.DatabaseHelper;
 import com.example.myapplication.model.Deck;
+import com.example.myapplication.ui.deck.DeckDetailActivity;
+import com.example.myapplication.ui.deck.EditDeckActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +36,18 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.DeckViewHolder
     private List<Deck> deckListFull;
     private Context context;
     private DatabaseHelper dbHelper;
+    private OnDeckEditListener editListener;
 
-    public DeckAdapter(Context context, List<Deck> deckList) {
+    public interface OnDeckEditListener {
+        void onEditDeck(int deckId);
+    }
+
+    public DeckAdapter(Context context, List<Deck> deckList, OnDeckEditListener listener) {
         this.context = context;
         this.deckList = deckList;
         this.deckListFull = new ArrayList<>(deckList);
         this.dbHelper = new DatabaseHelper(context);
+        this.editListener = listener;
     }
 
     @NonNull
@@ -49,14 +61,40 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.DeckViewHolder
     public void onBindViewHolder(@NonNull DeckViewHolder holder, int position) {
         Deck deck = deckList.get(position);
         holder.deckName.setText(deck.getName());
+        holder.deckDescription.setText(deck.getDescription());
 
         int cardCount = dbHelper.getCardCountForDeck(deck.getId());
         holder.cardCount.setText(cardCount + " Cards");
 
+        // --- Start of Color and Icon Setting Logic ---
+        try {
+            // Set background color
+            if (deck.getColor() != null && !deck.getColor().isEmpty()) {
+                holder.cardView.setCardBackgroundColor(Color.parseColor(deck.getColor()));
+            } else {
+                holder.cardView.setCardBackgroundColor(Color.parseColor("#7C4DFF"));
+            }
+
+            // Set deck icon
+            if (deck.getIconKey() != null && !deck.getIconKey().isEmpty()) {
+                int drawableId = context.getResources().getIdentifier(deck.getIconKey(), "drawable", context.getPackageName());
+                Drawable icon = AppCompatResources.getDrawable(context, drawableId);
+                DrawableCompat.setTint(icon, Color.WHITE);
+                holder.deckIcon.setImageDrawable(icon);
+            } else {
+                holder.deckIcon.setImageResource(R.drawable.ic_book); 
+            }
+        } catch (Exception e) {
+            // Silently set defaults in case of any error
+            holder.cardView.setCardBackgroundColor(Color.parseColor("#7C4DFF"));
+            holder.deckIcon.setImageResource(R.drawable.ic_book);
+        }
+        // --- End of Color and Icon Setting Logic ---
+
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DeckDetailActivity.class);
-            intent.putExtra(QuizActivity.EXTRA_DECK_ID, deck.getId());
-            intent.putExtra(StudyDeckActivity.EXTRA_DECK_NAME, deck.getName());
+            intent.putExtra(DeckDetailActivity.EXTRA_DECK_ID, deck.getId());
+            intent.putExtra(DeckDetailActivity.EXTRA_DECK_NAME, deck.getName());
             context.startActivity(intent);
         });
 
@@ -67,9 +105,9 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.DeckViewHolder
             popup.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
                 if (itemId == R.id.action_edit_deck) {
-                    Intent intent = new Intent(context, EditDeckActivity.class);
-                    intent.putExtra(EditDeckActivity.EXTRA_DECK_ID, deck.getId());
-                    context.startActivity(intent);
+                    if (editListener != null) {
+                        editListener.onEditDeck(deck.getId());
+                    }
                     return true;
                 } else if (itemId == R.id.action_delete_deck) {
                     new AlertDialog.Builder(context)
@@ -134,14 +172,18 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.DeckViewHolder
     };
 
     static class DeckViewHolder extends RecyclerView.ViewHolder {
-        TextView deckName, cardCount;
-        ImageView optionsMenu;
+        TextView deckName, cardCount, deckDescription;
+        ImageView optionsMenu, deckIcon; 
+        CardView cardView;
 
         public DeckViewHolder(@NonNull View itemView) {
             super(itemView);
             deckName = itemView.findViewById(R.id.deck_name);
             cardCount = itemView.findViewById(R.id.deck_card_count);
+            deckDescription = itemView.findViewById(R.id.deck_description);
             optionsMenu = itemView.findViewById(R.id.deck_options_menu);
+            deckIcon = itemView.findViewById(R.id.deck_icon); 
+            cardView = (CardView) itemView; 
         }
     }
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#1C1B1F"
-    tools:context=".ui.FavoritesActivity">
+    tools:context=".ui.favorite.FavoritesActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -49,6 +49,16 @@
         android:padding="8dp"
         android:clipToPadding="false"
         tools:listitem="@layout/item_favorite_card" />
+
+    <TextView
+        android:id="@+id/no_favorites_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No favorites yet."
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

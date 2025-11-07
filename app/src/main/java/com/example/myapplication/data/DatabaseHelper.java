@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.myapplication.model.Deck;
 import com.example.myapplication.model.Flashcard;
+import com.example.myapplication.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +16,8 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "studycards.db";
-    // Bump the database version to 3 to trigger onUpgrade
-    private static final int DATABASE_VERSION = 3;
+    // Bump the database version to force onUpgrade
+    private static final int DATABASE_VERSION = 4;
 
     // Table Names
     private static final String TABLE_USERS = "users";
@@ -131,9 +132,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 3) {
-            db.execSQL("ALTER TABLE " + TABLE_FLASHCARDS + " ADD COLUMN " + KEY_CARD_IS_FAVORITE + " INTEGER DEFAULT 0");
-        }
+        // Drop older tables if existed
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_FLASHCARDS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DECKS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
+        // Create tables again
+        onCreate(db);
     }
 
     public List<Flashcard> getFavoriteFlashcards(int userId) {
@@ -230,11 +234,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean checkUser(String email, String password) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_USERS, new String[]{KEY_USER_ID}, KEY_USER_EMAIL + "=? AND " + KEY_USER_PASSWORD + "=?", new String[]{email, password}, null, null, null);
-        int count = cursor.getCount();
-        cursor.close();
-        return count > 0;
+        User user = getUserByEmail(email);
+        return user != null && user.getPassword().equals(password);
     }
 
     public List<Deck> getAllDecks(int userId) {
@@ -261,6 +262,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public int getCardCountForDeck(int deckId) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_FLASHCARDS + " WHERE " + KEY_CARD_DECK_ID + " = ?", new String[]{String.valueOf(deckId)});
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+        }
+        cursor.close();
+        return count;
+    }
+
+    public int getCardCountForUser(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT COUNT(*) FROM " + TABLE_FLASHCARDS + " f INNER JOIN " + TABLE_DECKS + " d ON f." + KEY_CARD_DECK_ID + " = d." + KEY_DECK_ID + " WHERE d." + KEY_DECK_USER_ID + " = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
         int count = 0;
         if (cursor.moveToFirst()) {
             count = cursor.getInt(0);
@@ -305,5 +318,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.close();
         }
         return deck;
+    }
+
+    public User getUserById(int userId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_USERS, null, KEY_USER_ID + " = ?", new String[]{String.valueOf(userId)}, null, null, null);
+
+        User user = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            user = new User();
+            user.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_ID)));
+            user.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_NAME)));
+            user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_EMAIL)));
+            user.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_PASSWORD)));
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        return user;
+    }
+
+    public User getUserByEmail(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_USERS, null, KEY_USER_EMAIL + " = ?", new String[]{email}, null, null, null);
+
+        User user = null;
+        if (cursor != null && cursor.moveToFirst()) {
+            user = new User();
+            user.setId(cursor.getInt(cursor.getColumnIndexOrThrow(KEY_USER_ID)));
+            user.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_NAME)));
+            user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_EMAIL)));
+            user.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_PASSWORD)));
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        return user;
     }
 }

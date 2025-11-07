@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.data.DatabaseHelper;
 import com.example.myapplication.model.Flashcard;
+import com.example.myapplication.ui.study.StudyFlashcardActivity;
 
 import java.io.Serializable;
 import java.util.List;

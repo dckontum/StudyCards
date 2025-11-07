@@ -1,34 +1,33 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.deck;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.adapter.DeckAdapter;
 import com.example.myapplication.data.DatabaseHelper;
 import com.example.myapplication.model.Deck;
+import com.example.myapplication.ui.favorite.FavoritesActivity;
+import com.example.myapplication.ui.profile.ProfileActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DeckAdapter.OnDeckEditListener {
 
     private RecyclerView decksRecyclerView;
     private DeckAdapter deckAdapter;
@@ -71,11 +70,17 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_home);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.nav_home) {
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_home) {
                 return true;
-            } else if (item.getItemId() == R.id.nav_favorites) {
+            } else if (itemId == R.id.nav_favorites) {
                 startActivity(new Intent(getApplicationContext(), FavoritesActivity.class));
+                overridePendingTransition(0, 0);
+                return true;
+            }
+            else if (itemId == R.id.nav_profile) {
+                startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
                 overridePendingTransition(0, 0);
                 return true;
             }
@@ -90,10 +95,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadDecks() {
-        int currentUserId = 1;
+        int currentUserId = 1; 
         deckList = dbHelper.getAllDecks(currentUserId);
-        deckAdapter = new DeckAdapter(this, deckList);
+        deckAdapter = new DeckAdapter(this, deckList, this);
         decksRecyclerView.setAdapter(deckAdapter);
+    }
+
+    @Override
+    public void onEditDeck(int deckId) {
+        Intent intent = new Intent(this, EditDeckActivity.class);
+        intent.putExtra(EditDeckActivity.EXTRA_DECK_ID, deckId);
+        editDeckLauncher.launch(intent);
     }
 
     @Override
@@ -103,21 +115,17 @@ public class MainActivity extends AppCompatActivity {
         SearchView searchView = (SearchView) searchItem.getActionView();
 
         // --- Force-styling the SearchView to be white ---
-
-        // 1. Style the query text (the text you type)
         EditText searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
         if (searchEditText != null) {
             searchEditText.setTextColor(Color.WHITE);
             searchEditText.setHintTextColor(Color.GRAY);
         }
 
-        // 2. Style the search icon
         ImageView searchIcon = searchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
         if (searchIcon != null) {
             searchIcon.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
         }
 
-        // 3. Style the close button ("X")
         ImageView closeIcon = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
         if (closeIcon != null) {
             closeIcon.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);

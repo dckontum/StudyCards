@@ -1,6 +1,7 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.auth;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -12,9 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.DatabaseHelper;
-
-// Correctly import MainActivity from the UI package
-import com.example.myapplication.ui.MainActivity;
+import com.example.myapplication.model.User;
+import com.example.myapplication.ui.deck.MainActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -62,12 +62,22 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (dbHelper.checkUser(email, password)) {
-            Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show();
-            
-            // This intent now correctly points to the MainActivity in the UI package
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish(); // Close LoginActivity
+            User user = dbHelper.getUserByEmail(email);
+            if (user != null) {
+                // Save user ID to SharedPreferences
+                SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("user_id", user.getId());
+                editor.apply();
+
+                Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish(); // Close LoginActivity
+            } else {
+                Toast.makeText(this, "User not found!", Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show();
         }

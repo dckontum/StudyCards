@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.data.DatabaseHelper;
 import com.example.myapplication.model.Flashcard;
+import com.example.myapplication.ui.flashcard.EditFlashcardActivity;
 
 import java.util.ArrayList;
 import java.util.List;

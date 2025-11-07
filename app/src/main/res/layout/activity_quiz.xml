@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#1C1B1F"
     android:padding="16dp"
-    tools:context=".ui.QuizActivity">
+    tools:context=".ui.quiz.QuizActivity">
 
     <!-- Top Bar with Progress and Close Button -->
     <RelativeLayout
@@ -41,7 +41,7 @@
         android:id="@+id/question_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android.layout_below="@id/quiz_top_bar"
+        android:layout_below="@id/quiz_top_bar"
         app:cardBackgroundColor="#2C2A3C"
         app:cardCornerRadius="16dp"
         android:layout_marginBottom="24dp">
@@ -49,7 +49,7 @@
         <TextView
             android:id="@+id/quiz_question_text"
             android:layout_width="match_parent"
-            android.layout_height="wrap_content"
+            android:layout_height="wrap_content"
             android:textColor="@android:color/white"
             android:textSize="22sp"
             android:gravity="center"

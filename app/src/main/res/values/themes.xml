@@ -7,10 +7,15 @@
 
     <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />
 
-    <style name="Theme.StudyCards" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:statusBarColor">#141021</item>
-        <item name="android:navigationBarColor">#141021</item>
+    <style name="Theme.StudyCards" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:statusBarColor">@color/dark_primary</item>
+        <item name="android:navigationBarColor">@color/dark_primary</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="colorPrimary">@color/dark_primary</item>
+        <item name="colorOnPrimary">@color/dark_on_primary</item>
+        <item name="colorSecondary">@color/dark_secondary</item>
+        <item name="colorOnSecondary">@color/dark_on_secondary</item>
+        <item name="android:colorBackground">@color/dark_primary_variant</item>
     </style>
 
     <!-- Custom Toolbar Theme for white icons and text -->

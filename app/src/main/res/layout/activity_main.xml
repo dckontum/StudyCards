@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#1C1B1F"
-    tools:context=".ui.MainActivity">
+    tools:context=".ui.deck.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -44,10 +44,11 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="72dp"
+        android:layout_marginBottom="94dp"
+        android:contentDescription="Add new deck"
         android:src="@drawable/ic_add"
         app:backgroundTint="@color/colorAccent"
-        app:tint="@color/white"/>
+        app:tint="@color/white" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

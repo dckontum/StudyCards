@@ -1,7 +1,6 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.flashcard;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -13,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.data.DatabaseHelper;
 import com.example.myapplication.model.Flashcard;
+import com.example.myapplication.ui.flashcard.AddFlashcardsAdapter;
+import com.example.myapplication.ui.study.StudyDeckActivity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.quiz;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -16,6 +16,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.data.DatabaseHelper;
 import com.example.myapplication.model.Flashcard;
 import com.example.myapplication.model.QuizQuestion;
+import com.example.myapplication.ui.quiz.QuizResultsActivity;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;

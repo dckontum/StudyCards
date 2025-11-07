@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.deck;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -17,8 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.adapter.FlashcardAdapter;
 import com.example.myapplication.data.DatabaseHelper;
 import com.example.myapplication.model.Flashcard;
+import com.example.myapplication.ui.flashcard.AddFlashcardsActivity;
+import com.example.myapplication.ui.quiz.QuizActivity;
+import com.example.myapplication.ui.study.StudyDeckActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,8 +119,8 @@ public class DeckDetailActivity extends AppCompatActivity {
 
         studyButton.setOnClickListener(v -> {
             Intent intent = new Intent(DeckDetailActivity.this, StudyDeckActivity.class);
-            intent.putExtra(EXTRA_DECK_ID, deckId);
-            intent.putExtra(EXTRA_DECK_NAME, deckDetailTitle.getText().toString());
+            intent.putExtra(StudyDeckActivity.EXTRA_DECK_ID, deckId);
+            intent.putExtra(StudyDeckActivity.EXTRA_DECK_NAME, deckDetailTitle.getText().toString());
             startActivity(intent);
         });
 

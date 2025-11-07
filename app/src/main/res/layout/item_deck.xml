@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardBackgroundColor="#2C2A3C"
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp">
 
@@ -43,7 +42,7 @@
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/deck_options_menu"
+            app:layout_constraintEnd_toStartOf="@id/deck_options_menu"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginEnd="8dp"/>

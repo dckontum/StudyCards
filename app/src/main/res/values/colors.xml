@@ -17,10 +17,20 @@
 
     <!-- Dark Theme Colors -->
     <color name="dark_primary">#1C1B1F</color>
-    <color name="dark_primary_variant">#252525</color>
+    <color name="dark_primary_variant">#212127</color>
     <color name="dark_on_primary">#FFFFFF</color>
     <color name="dark_secondary">#D1C4E9</color>
     <color name="dark_on_secondary">#000000</color>
+
+    <!-- Profile Dark Theme Colors -->
+    <color name="profile_dark_background">#212127</color>
+    <color name="profile_card_background">#2E2E38</color>
+    <color name="profile_text_primary">#EAEAFF</color>
+    <color name="profile_text_secondary">#B8B8C6</color>
+    <color name="profile_icon_accent">#A974FF</color>
+    <color name="profile_logout_text">#FF7A9B</color>
+    <color name="gradient_start_color">#A974FF</color>
+    <color name="gradient_end_color">#FF7A9B</color>
 
     <!-- Bottom Navigation Colors -->
     <color name="bottom_nav_selected">#D1C4E9</color>

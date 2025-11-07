@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#1C1B1F"
     android:padding="16dp"
-    tools:context=".ui.QuizResultsActivity">
+    tools:context=".ui.quiz.QuizResultsActivity">
 
     <!-- Centered Content -->
     <LinearLayout
