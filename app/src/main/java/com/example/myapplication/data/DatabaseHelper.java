@@ -17,7 +17,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "studycards.db";
     // Bump the database version to force onUpgrade
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5; // Incremented version
 
     // Table Names
     private static final String TABLE_USERS = "users";
@@ -29,6 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_USER_NAME = "name";
     private static final String KEY_USER_EMAIL = "email";
     private static final String KEY_USER_PASSWORD = "password";
+    private static final String KEY_USER_PHONE = "phone_number"; // New column
 
     // Deck Table Columns
     private static final String KEY_DECK_ID = "id";
@@ -55,7 +56,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + KEY_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + KEY_USER_NAME + " TEXT,"
                 + KEY_USER_EMAIL + " TEXT UNIQUE,"
-                + KEY_USER_PASSWORD + " TEXT"
+                + KEY_USER_PASSWORD + " TEXT,"
+                + KEY_USER_PHONE + " TEXT"
                 + ")";
         db.execSQL(CREATE_USERS_TABLE);
 
@@ -89,6 +91,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         userValues.put(KEY_USER_NAME, "ngoc");
         userValues.put(KEY_USER_EMAIL, "a@gmail.com");
         userValues.put(KEY_USER_PASSWORD, "28061977");
+        userValues.put(KEY_USER_PHONE, "0123456789"); // Add phone number
         db.insert(TABLE_USERS, null, userValues);
 
         db.insert(TABLE_DECKS, null, createDeckValues("English Vocabulary 101", "Basic words for beginners.", 1, "ic_book", "#7C4DFF"));
@@ -132,12 +135,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Drop older tables if existed
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_FLASHCARDS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_DECKS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
-        // Create tables again
-        onCreate(db);
+        if (oldVersion < 5) {
+            db.execSQL("ALTER TABLE " + TABLE_USERS + " ADD COLUMN " + KEY_USER_PHONE + " TEXT");
+        }
     }
 
     public List<Flashcard> getFavoriteFlashcards(int userId) {
@@ -331,6 +331,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             user.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_NAME)));
             user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_EMAIL)));
             user.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_PASSWORD)));
+            user.setPhoneNumber(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_PHONE)));
         }
         if (cursor != null) {
             cursor.close();
@@ -349,10 +350,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             user.setName(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_NAME)));
             user.setEmail(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_EMAIL)));
             user.setPassword(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_PASSWORD)));
+            user.setPhoneNumber(cursor.getString(cursor.getColumnIndexOrThrow(KEY_USER_PHONE)));
         }
         if (cursor != null) {
             cursor.close();
         }
         return user;
+    }
+
+    public void updateUser(User user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_USER_NAME, user.getName());
+        values.put(KEY_USER_EMAIL, user.getEmail());
+        values.put(KEY_USER_PHONE, user.getPhoneNumber());
+
+        db.update(TABLE_USERS, values, KEY_USER_ID + " = ?",
+                new String[]{String.valueOf(user.getId())});
+    }
+
+    public void updatePassword(int userId, String newPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(KEY_USER_PASSWORD, newPassword);
+        db.update(TABLE_USERS, values, KEY_USER_ID + " = ?", new String[]{String.valueOf(userId)});
     }
 }
