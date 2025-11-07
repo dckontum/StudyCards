@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
@@ -67,14 +68,21 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         logoutButton.setOnClickListener(v -> {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.remove("user_id");
-            editor.apply();
+            new AlertDialog.Builder(ProfileActivity.this)
+                    .setTitle("Logout")
+                    .setMessage("Are you sure you want to log out?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        SharedPreferences.Editor editor = prefs.edit();
+                        editor.remove("user_id");
+                        editor.apply();
 
-            Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+                        Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
         });
 
         editProfileButton.setOnClickListener(v -> {
