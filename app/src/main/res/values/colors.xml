@@ -32,6 +32,17 @@
     <color name="gradient_start_color">#A974FF</color>
     <color name="gradient_end_color">#FF7A9B</color>
 
+    <!-- Edit Profile Colors -->
+    <color name="edit_profile_bg">#212127</color>
+    <color name="edit_profile_card_bg">#2E2E38</color>
+    <color name="edit_profile_label_text">#EAEAFF</color>
+    <color name="edit_profile_hint_text">#B8B8C6</color>
+    <color name="edit_profile_border_default">#3A3A45</color>
+    <color name="edit_profile_border_focused">#A974FF</color>
+    <color name="edit_profile_button_gradient_start">#7C4DFF</color>
+    <color name="edit_profile_button_gradient_end">#E94057</color>
+    <color name="edit_profile_appbar_bg">#18181C</color>
+
     <!-- Bottom Navigation Colors -->
     <color name="bottom_nav_selected">#D1C4E9</color>
     <color name="bottom_nav_unselected">#9E9E9E</color>

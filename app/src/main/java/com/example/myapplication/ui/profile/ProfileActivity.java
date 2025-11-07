@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
@@ -20,17 +22,30 @@ import com.google.android.material.card.MaterialCardView;
 
 public class ProfileActivity extends AppCompatActivity {
 
+    private TextView profileName, profileEmail, deckCount, cardCount;
+    private DatabaseHelper dbHelper;
+    private int userId;
+
+    private final ActivityResultLauncher<Intent> editProfileLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    // Refresh the user data
+                    loadUserData();
+                }
+            });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        DatabaseHelper dbHelper = new DatabaseHelper(this);
+        dbHelper = new DatabaseHelper(this);
 
-        TextView profileName = findViewById(R.id.profile_name);
-        TextView profileEmail = findViewById(R.id.profile_email);
-        TextView deckCount = findViewById(R.id.deck_count);
-        TextView cardCount = findViewById(R.id.card_count);
+        profileName = findViewById(R.id.profile_name);
+        profileEmail = findViewById(R.id.profile_email);
+        deckCount = findViewById(R.id.deck_count);
+        cardCount = findViewById(R.id.card_count);
         MaterialButton logoutButton = findViewById(R.id.logout_button);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         MaterialCardView editProfileButton = findViewById(R.id.edit_profile_button);
@@ -38,38 +53,24 @@ public class ProfileActivity extends AppCompatActivity {
 
         bottomNavigationView.setSelectedItemId(R.id.nav_profile);
 
-        // --- Load User Data ---
         SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        int userId = prefs.getInt("user_id", -1);
+        userId = prefs.getInt("user_id", -1);
 
         if (userId != -1) {
-            User currentUser = dbHelper.getUserById(userId);
-            if (currentUser != null) {
-                profileName.setText(currentUser.getName());
-                profileEmail.setText(currentUser.getEmail());
-
-                int decks = dbHelper.getAllDecks(userId).size();
-                deckCount.setText(String.valueOf(decks));
-
-                int cards = dbHelper.getCardCountForUser(userId);
-                cardCount.setText(String.valueOf(cards));
-            }
+            loadUserData();
         } else {
             // Handle user not logged in case
             Toast.makeText(this, "User not logged in!", Toast.LENGTH_SHORT).show();
-            // Optionally, redirect to login
             Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
         }
 
         logoutButton.setOnClickListener(v -> {
-            // Clear SharedPreferences
             SharedPreferences.Editor editor = prefs.edit();
             editor.remove("user_id");
             editor.apply();
 
-            // Navigate to Login Screen
             Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -77,13 +78,13 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         editProfileButton.setOnClickListener(v -> {
-            // Navigate to Edit Profile screen (You need to create this activity)
-            Toast.makeText(this, "This feature is under development", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
+            editProfileLauncher.launch(intent);
         });
 
         changePasswordButton.setOnClickListener(v -> {
-            // Navigate to Change Password screen (You need to create this activity)
-            Toast.makeText(this, "This feature is under development", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(ProfileActivity.this, ChangePasswordActivity.class);
+            startActivity(intent);
         });
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -103,5 +104,19 @@ public class ProfileActivity extends AppCompatActivity {
             }
             return false;
         });
+    }
+
+    private void loadUserData() {
+        User currentUser = dbHelper.getUserById(userId);
+        if (currentUser != null) {
+            profileName.setText(currentUser.getName());
+            profileEmail.setText(currentUser.getEmail());
+
+            int decks = dbHelper.getAllDecks(userId).size();
+            deckCount.setText(String.valueOf(decks));
+
+            int cards = dbHelper.getCardCountForUser(userId);
+            cardCount.setText(String.valueOf(cards));
+        }
     }
 }

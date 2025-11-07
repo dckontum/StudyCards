@@ -3,8 +3,8 @@
     android:shape="rectangle">
     <gradient
         android:angle="45"
-        android:startColor="@color/colorAccent"
-        android:endColor="@color/deep_pink"
+        android:startColor="@color/edit_profile_button_gradient_start"
+        android:endColor="@color/edit_profile_button_gradient_end"
         android:type="linear" />
     <corners android:radius="100dp" />
 </shape>
