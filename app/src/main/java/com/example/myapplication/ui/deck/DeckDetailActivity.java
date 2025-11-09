@@ -21,7 +21,7 @@ import com.example.myapplication.adapter.FlashcardAdapter;
 import com.example.myapplication.data.DatabaseHelper;
 import com.example.myapplication.model.Flashcard;
 import com.example.myapplication.ui.flashcard.AddFlashcardsActivity;
-import com.example.myapplication.ui.quiz.QuizActivity;
+import com.example.myapplication.ui.quiz.QuizSettingsActivity;
 import com.example.myapplication.ui.study.StudyDeckActivity;
 
 import java.util.ArrayList;
@@ -125,8 +125,9 @@ public class DeckDetailActivity extends AppCompatActivity {
         });
 
         quizButton.setOnClickListener(v -> {
-            Intent intent = new Intent(DeckDetailActivity.this, QuizActivity.class);
-            intent.putExtra(QuizActivity.EXTRA_DECK_ID, deckId);
+            Intent intent = new Intent(DeckDetailActivity.this, QuizSettingsActivity.class);
+            intent.putExtra(EXTRA_DECK_ID, deckId);
+            intent.putExtra(EXTRA_DECK_NAME, deckDetailTitle.getText().toString());
             startActivity(intent);
         });
     }

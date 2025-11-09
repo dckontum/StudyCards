@@ -60,13 +60,10 @@
             android:name=".ui.study.StudyDeckActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.quiz.QuizActivity"
+            android:name=".ui.quiz.QuizSettingsActivity"
             android:exported="false" />
-<!--        <activity-->
-<!--            android.name=".ui.quiz.QuizResultsActivity"-->
-<!--            android:exported="false" />-->
         <activity
-            android:name=".ui.quiz.ReviewQuizActivity"
+            android:name=".ui.quiz.QuizActivity"
             android:exported="false" />
 
         <!-- Other Main-level Activities -->
