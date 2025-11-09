@@ -2,22 +2,25 @@ package com.example.myapplication.ui.quiz;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.DatabaseHelper;
 import com.example.myapplication.model.Flashcard;
 import com.example.myapplication.model.QuizQuestion;
-import com.example.myapplication.ui.quiz.QuizResultsActivity;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,26 +28,38 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class QuizActivity extends AppCompatActivity implements View.OnClickListener {
+public class QuizActivity extends AppCompatActivity {
 
-    public static final String EXTRA_DECK_ID = "extra_deck_id";
-    private static final int MIN_CARDS_FOR_QUIZ = 4;
-
-    private TextView progressText, questionText;
-    private MaterialButton optionA, optionB, optionC, optionD, submitButton;
+    private DatabaseHelper dbHelper;
+    private int deckId;
+    private String deckName;
+    private int questionCount;
+    private int timeLimit; // in seconds
+    private String reviewOption;
 
     private ArrayList<QuizQuestion> quizQuestions;
     private int currentQuestionIndex = 0;
-    private MaterialButton selectedOptionButton = null;
     private int correctAnswers = 0;
+
+    private Toolbar toolbar;
+    private TextView progressText, questionText;
+    private MaterialButtonToggleGroup optionsGroup;
+    private MaterialButton optionA, optionB, optionC, optionD;
+    private CountDownTimer countDownTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
-        DatabaseHelper dbHelper = new DatabaseHelper(this);
-        int deckId = getIntent().getIntExtra(EXTRA_DECK_ID, -1);
+        dbHelper = new DatabaseHelper(this);
+
+        // Get data from settings
+        deckId = getIntent().getIntExtra(QuizSettingsActivity.EXTRA_DECK_ID, -1);
+        deckName = getIntent().getStringExtra(QuizSettingsActivity.EXTRA_DECK_NAME);
+        questionCount = getIntent().getIntExtra(QuizSettingsActivity.EXTRA_QUESTION_COUNT, 10);
+        timeLimit = getIntent().getIntExtra(QuizSettingsActivity.EXTRA_TIME_LIMIT, 0);
+        reviewOption = getIntent().getStringExtra(QuizSettingsActivity.EXTRA_REVIEW_OPTION);
 
         if (deckId == -1) {
             Toast.makeText(this, "Error: Deck not found.", Toast.LENGTH_SHORT).show();
@@ -52,76 +67,70 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
-        List<Flashcard> flashcards = dbHelper.getFlashcardsForDeck(deckId);
-
-        if (flashcards.size() < MIN_CARDS_FOR_QUIZ) {
-            Toast.makeText(this, "You need at least 4 cards in this deck to start a quiz.", Toast.LENGTH_LONG).show();
+        List<Flashcard> allFlashcards = dbHelper.getFlashcardsForDeck(deckId);
+        if (allFlashcards.size() < 4) {
+            Toast.makeText(this, "Not enough cards for a quiz (minimum 4).", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
 
-        quizQuestions = generateQuizQuestions(flashcards);
-        if (quizQuestions.isEmpty()) {
-            Toast.makeText(this, "Not enough unique answers. You need at least 4 different answers in your cards.", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
+        quizQuestions = generateQuizQuestions(allFlashcards, questionCount);
 
         setupViews();
         displayQuestion();
     }
 
     private void setupViews() {
+        toolbar = findViewById(R.id.quiz_toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(deckName);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
         progressText = findViewById(R.id.quiz_progress_text);
         questionText = findViewById(R.id.quiz_question_text);
-        ImageView closeButton = findViewById(R.id.quiz_close_button);
+        optionsGroup = findViewById(R.id.answer_options_group);
+        optionA = findViewById(R.id.option_a);
+        optionB = findViewById(R.id.option_b);
+        optionC = findViewById(R.id.option_c);
+        optionD = findViewById(R.id.option_d);
 
-        optionA = findViewById(R.id.quiz_option_a);
-        optionB = findViewById(R.id.quiz_option_b);
-        optionC = findViewById(R.id.quiz_option_c);
-        optionD = findViewById(R.id.quiz_option_d);
-        submitButton = findViewById(R.id.quiz_submit_button);
-
-        optionA.setOnClickListener(this);
-        optionB.setOnClickListener(this);
-        optionC.setOnClickListener(this);
-        optionD.setOnClickListener(this);
-
-        closeButton.setOnClickListener(v -> finish());
-        submitButton.setOnClickListener(v -> handleSubmit());
+        optionsGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (isChecked) {
+                handleAnswerSelection(checkedId);
+            }
+        });
     }
 
-    private ArrayList<QuizQuestion> generateQuizQuestions(List<Flashcard> flashcards) {
+    private ArrayList<QuizQuestion> generateQuizQuestions(List<Flashcard> flashcards, int count) {
         ArrayList<QuizQuestion> generatedQuestions = new ArrayList<>();
-        Set<String> uniqueAnswers = new HashSet<>();
+        Set<String> allAnswers = new HashSet<>();
         for (Flashcard fc : flashcards) {
-            uniqueAnswers.add(fc.getBackContent());
+            allAnswers.add(fc.getBackContent());
         }
 
-        if (uniqueAnswers.size() < MIN_CARDS_FOR_QUIZ) {
-            return new ArrayList<>(); // Not enough unique answers
-        }
-
-        List<String> allUniqueAnswers = new ArrayList<>(uniqueAnswers);
         Collections.shuffle(flashcards);
+        List<Flashcard> selectedFlashcards = flashcards.subList(0, Math.min(count, flashcards.size()));
 
-        for (Flashcard card : flashcards) {
-            String questionText = card.getFrontContent();
+        for (Flashcard card : selectedFlashcards) {
+            String question = card.getFrontContent();
             String correctAnswer = card.getBackContent();
 
             List<String> options = new ArrayList<>();
             options.add(correctAnswer);
 
-            List<String> wrongAnswerPool = new ArrayList<>(allUniqueAnswers);
+            List<String> wrongAnswerPool = new ArrayList<>(allAnswers);
             wrongAnswerPool.remove(correctAnswer);
             Collections.shuffle(wrongAnswerPool);
 
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 3 && i < wrongAnswerPool.size(); i++) {
                 options.add(wrongAnswerPool.get(i));
             }
 
             Collections.shuffle(options);
-            generatedQuestions.add(new QuizQuestion(questionText, options, correctAnswer));
+            generatedQuestions.add(new QuizQuestion(question, options, correctAnswer));
         }
 
         return generatedQuestions;
@@ -134,81 +143,81 @@ public class QuizActivity extends AppCompatActivity implements View.OnClickListe
         progressText.setText("Question " + (currentQuestionIndex + 1) + " of " + quizQuestions.size());
         questionText.setText(currentQuestion.getQuestionText());
 
-        optionA.setText(currentQuestion.getOptions().get(0));
-        optionB.setText(currentQuestion.getOptions().get(1));
-        optionC.setText(currentQuestion.getOptions().get(2));
-        optionD.setText(currentQuestion.getOptions().get(3));
-
-        submitButton.setText("Submit");
-        submitButton.setEnabled(false);
-        selectedOptionButton = null;
+        List<String> options = currentQuestion.getOptions();
+        optionA.setText(options.size() > 0 ? options.get(0) : "");
+        optionB.setText(options.size() > 1 ? options.get(1) : "");
+        optionC.setText(options.size() > 2 ? options.get(2) : "");
+        optionD.setText(options.size() > 3 ? options.get(3) : "");
     }
 
-    @Override
-    public void onClick(View v) {
-        resetOptionStyles();
-        selectedOptionButton = (MaterialButton) v;
-        selectedOptionButton.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#D0BCFF"))); // Highlight selected
-        selectedOptionButton.setStrokeWidth(4);
-        submitButton.setEnabled(true);
-    }
+    private void handleAnswerSelection(int checkedId) {
+        setOptionsEnabled(false); // Disable all options immediately
 
-    private void handleSubmit() {
-        if (selectedOptionButton == null) return;
+        MaterialButton selectedButton = findViewById(checkedId);
+        String selectedAnswer = selectedButton.getText().toString();
 
         QuizQuestion currentQuestion = quizQuestions.get(currentQuestionIndex);
-        String selectedAnswer = selectedOptionButton.getText().toString();
         currentQuestion.setUserAnswer(selectedAnswer);
 
-        // Disable all option buttons
-        optionA.setEnabled(false);
-        optionB.setEnabled(false);
-        optionC.setEnabled(false);
-        optionD.setEnabled(false);
-
         if (currentQuestion.wasCorrect()) {
-            selectedOptionButton.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#A5D6A7"))); // Green for correct
+            selectedButton.setBackgroundColor(ContextCompat.getColor(this, R.color.quiz_correct_answer));
             correctAnswers++;
         } else {
-            selectedOptionButton.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#F2B8B5"))); // Red for incorrect
-            // Highlight the correct answer
-            if (optionA.getText().toString().equals(currentQuestion.getCorrectAnswer())) {
-                optionA.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#A5D6A7")));
-            } else if (optionB.getText().toString().equals(currentQuestion.getCorrectAnswer())) {
-                optionB.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#A5D6A7")));
-            } else if (optionC.getText().toString().equals(currentQuestion.getCorrectAnswer())) {
-                optionC.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#A5D6A7")));
-            } else if (optionD.getText().toString().equals(currentQuestion.getCorrectAnswer())) {
-                optionD.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#A5D6A7")));
-            }
+            selectedButton.setBackgroundColor(ContextCompat.getColor(this, R.color.quiz_incorrect_answer));
+            highlightCorrectAnswer(currentQuestion.getCorrectAnswer());
         }
 
-        // Move to the next question or finish quiz
-        new Handler().postDelayed(() -> {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < quizQuestions.size()) {
-                displayQuestion();
-            } else {
-                finishQuiz();
-            }
-        }, 2000); // 2-second delay to show feedback
+        new Handler(Looper.getMainLooper()).postDelayed(this::moveToNextQuestion, 1200); // 1.2 second delay
     }
 
-    private void finishQuiz() {
-        Intent intent = new Intent(this, QuizResultsActivity.class);
-        intent.putExtra("correct_answers", correctAnswers);
-        intent.putExtra("total_questions", quizQuestions.size());
-        intent.putParcelableArrayListExtra("quiz_questions", quizQuestions);
-        startActivity(intent);
-        finish();
+    private void moveToNextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < quizQuestions.size()) {
+            displayQuestion();
+        } else {
+            showFinalScore();
+        }
+    }
+
+    private void highlightCorrectAnswer(String correctAnswer) {
+        if (optionA.getText().toString().equals(correctAnswer)) {
+            optionA.setBackgroundColor(ContextCompat.getColor(this, R.color.quiz_correct_answer));
+        } else if (optionB.getText().toString().equals(correctAnswer)) {
+            optionB.setBackgroundColor(ContextCompat.getColor(this, R.color.quiz_correct_answer));
+        } else if (optionC.getText().toString().equals(correctAnswer)) {
+            optionC.setBackgroundColor(ContextCompat.getColor(this, R.color.quiz_correct_answer));
+        } else if (optionD.getText().toString().equals(correctAnswer)) {
+            optionD.setBackgroundColor(ContextCompat.getColor(this, R.color.quiz_correct_answer));
+        }
+    }
+
+    private void showFinalScore() {
+        new AlertDialog.Builder(this)
+                .setTitle("Quiz Finished!")
+                .setMessage("Your score: " + correctAnswers + " / " + quizQuestions.size())
+                .setPositiveButton("OK", (dialog, which) -> finish())
+                .setCancelable(false)
+                .show();
+    }
+
+    private void setOptionsEnabled(boolean enabled) {
+        for (int i = 0; i < optionsGroup.getChildCount(); i++) {
+            optionsGroup.getChildAt(i).setEnabled(enabled);
+        }
     }
 
     private void resetOptionStyles() {
-        MaterialButton[] options = {optionA, optionB, optionC, optionD};
-        for (MaterialButton btn : options) {
-            btn.setEnabled(true);
-            btn.setStrokeColor(ColorStateList.valueOf(Color.parseColor("#49454F")));
-            btn.setStrokeWidth(1);
+        optionsGroup.clearChecked();
+        for (int i = 0; i < optionsGroup.getChildCount(); i++) {
+            MaterialButton button = (MaterialButton) optionsGroup.getChildAt(i);
+            button.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
+            button.setEnabled(true);
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 }
