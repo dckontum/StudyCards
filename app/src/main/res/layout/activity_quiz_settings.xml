@@ -106,30 +106,35 @@
                 app:singleSelection="true">
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_5_questions"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="5" />
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_10_questions"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="10" />
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_15_questions"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="15" />
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_20_questions"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="20" />
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_all_questions"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -167,28 +172,33 @@
                 app:singleSelection="true">
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_time_off"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:checked="true"
                     android:text="Off" />
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_time_10"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10s" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_time_30"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="30s" />
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_time_60"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="60s" />
-
-                <com.google.android.material.chip.Chip
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="90s" />
             </com.google.android.material.chip.ChipGroup>
 
             <View
@@ -206,28 +216,29 @@
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                 android:textColor="@color/profile_text_primary" />
 
-            <RadioGroup
-                android:id="@+id/review_options_group"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/review_options_chips"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
+                android:layout_marginTop="8dp"
+                app:singleSelection="true">
 
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/review_after_question"
-                    android:layout_width="match_parent"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_review_after_each"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:text="Show answer after each question"
-                    android:textColor="@color/profile_text_secondary" />
+                    android:text="Show after each question" />
 
-                <com.google.android.material.radiobutton.MaterialRadioButton
-                    android:id="@+id/review_at_end"
-                    android:layout_width="match_parent"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_review_at_end"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Show summary at the end"
-                    android:textColor="@color/profile_text_secondary" />
+                    android:text="Show summary at the end" />
 
-            </RadioGroup>
+            </com.google.android.material.chip.ChipGroup>
 
         </LinearLayout>
 
@@ -239,8 +250,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:background="@drawable/gradient_button_background"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp"
+        android:paddingVertical="14dp"
         android:text="Start Quiz"
         android:textColor="@color/white"
         android:textStyle="bold"

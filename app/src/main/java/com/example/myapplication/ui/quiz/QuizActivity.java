@@ -7,10 +7,10 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -30,12 +30,15 @@ import java.util.Set;
 
 public class QuizActivity extends AppCompatActivity {
 
+    private static final int DELAY_SHOW_FEEDBACK = 1000; // 1 second
+    private static final int DELAY_NO_FEEDBACK = 300;    // 0.3 seconds
+
     private DatabaseHelper dbHelper;
     private int deckId;
     private String deckName;
     private int questionCount;
-    private int timeLimit; // in seconds
     private String reviewOption;
+    private int timeLimit; // in seconds
 
     private ArrayList<QuizQuestion> quizQuestions;
     private int currentQuestionIndex = 0;
@@ -45,7 +48,19 @@ public class QuizActivity extends AppCompatActivity {
     private TextView progressText, questionText;
     private MaterialButtonToggleGroup optionsGroup;
     private MaterialButton optionA, optionB, optionC, optionD;
+    private ProgressBar timeProgressBar;
     private CountDownTimer countDownTimer;
+
+    private ColorStateList correctButtonColor;
+    private ColorStateList incorrectButtonColor;
+    private ColorStateList defaultOptionColor;
+    private ColorStateList defaultStrokeColor;
+
+    private final MaterialButtonToggleGroup.OnButtonCheckedListener buttonListener = (group, checkedId, isChecked) -> {
+        if (isChecked) {
+            handleAnswerSelection(checkedId);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +69,14 @@ public class QuizActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
 
-        // Get data from settings
         deckId = getIntent().getIntExtra(QuizSettingsActivity.EXTRA_DECK_ID, -1);
         deckName = getIntent().getStringExtra(QuizSettingsActivity.EXTRA_DECK_NAME);
         questionCount = getIntent().getIntExtra(QuizSettingsActivity.EXTRA_QUESTION_COUNT, 10);
-        timeLimit = getIntent().getIntExtra(QuizSettingsActivity.EXTRA_TIME_LIMIT, 0);
         reviewOption = getIntent().getStringExtra(QuizSettingsActivity.EXTRA_REVIEW_OPTION);
+        timeLimit = getIntent().getIntExtra(QuizSettingsActivity.EXTRA_TIME_LIMIT, 0);
+        if (reviewOption == null) {
+            reviewOption = "after_each"; // Default value
+        }
 
         if (deckId == -1) {
             Toast.makeText(this, "Error: Deck not found.", Toast.LENGTH_SHORT).show();
@@ -84,7 +101,7 @@ public class QuizActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.quiz_toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(deckName);
+            getSupportActionBar().setTitle(deckName != null ? deckName : "Quiz");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
@@ -96,12 +113,12 @@ public class QuizActivity extends AppCompatActivity {
         optionB = findViewById(R.id.option_b);
         optionC = findViewById(R.id.option_c);
         optionD = findViewById(R.id.option_d);
+        timeProgressBar = findViewById(R.id.time_progress_bar);
 
-        optionsGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (isChecked) {
-                handleAnswerSelection(checkedId);
-            }
-        });
+        correctButtonColor = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.quiz_correct_answer));
+        incorrectButtonColor = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.quiz_incorrect_answer));
+        defaultOptionColor = ContextCompat.getColorStateList(this, R.color.quiz_option_background_default);
+        defaultStrokeColor = ContextCompat.getColorStateList(this, R.color.quiz_option_stroke);
     }
 
     private ArrayList<QuizQuestion> generateQuizQuestions(List<Flashcard> flashcards, int count) {
@@ -148,26 +165,73 @@ public class QuizActivity extends AppCompatActivity {
         optionB.setText(options.size() > 1 ? options.get(1) : "");
         optionC.setText(options.size() > 2 ? options.get(2) : "");
         optionD.setText(options.size() > 3 ? options.get(3) : "");
+
+        startTimer();
     }
 
     private void handleAnswerSelection(int checkedId) {
-        setOptionsEnabled(false); // Disable all options immediately
+        cancelTimer();
+        optionsGroup.removeOnButtonCheckedListener(buttonListener);
+        setOptionsEnabled(false);
 
         MaterialButton selectedButton = findViewById(checkedId);
-        String selectedAnswer = selectedButton.getText().toString();
+        // Handle case where time runs out and no button is checked
+        String selectedAnswer = (selectedButton != null) ? selectedButton.getText().toString() : ""; 
 
         QuizQuestion currentQuestion = quizQuestions.get(currentQuestionIndex);
         currentQuestion.setUserAnswer(selectedAnswer);
 
         if (currentQuestion.wasCorrect()) {
-            selectedButton.setBackgroundColor(ContextCompat.getColor(this, R.color.quiz_correct_answer));
             correctAnswers++;
-        } else {
-            selectedButton.setBackgroundColor(ContextCompat.getColor(this, R.color.quiz_incorrect_answer));
-            highlightCorrectAnswer(currentQuestion.getCorrectAnswer());
         }
 
-        new Handler(Looper.getMainLooper()).postDelayed(this::moveToNextQuestion, 1200); // 1.2 second delay
+        if ("at_end".equals(reviewOption)) {
+            new Handler(Looper.getMainLooper()).postDelayed(this::moveToNextQuestion, DELAY_NO_FEEDBACK);
+        } else {
+            if (selectedButton != null) {
+                if (currentQuestion.wasCorrect()) {
+                    selectedButton.setBackgroundTintList(correctButtonColor);
+                } else {
+                    selectedButton.setBackgroundTintList(incorrectButtonColor);
+                    highlightCorrectAnswer(currentQuestion.getCorrectAnswer());
+                }
+            } // If timeout, no button is selected, so no color change
+            
+            new Handler(Looper.getMainLooper()).postDelayed(this::moveToNextQuestion, DELAY_SHOW_FEEDBACK);
+        }
+    }
+
+    private void startTimer() {
+        if (timeLimit > 0) {
+            timeProgressBar.setVisibility(View.VISIBLE);
+            timeProgressBar.setProgress(100);
+            countDownTimer = new CountDownTimer(timeLimit * 1000, 100) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    int progress = (int) (((double) millisUntilFinished / (timeLimit * 1000)) * 100);
+                    timeProgressBar.setProgress(progress);
+                }
+
+                @Override
+                public void onFinish() {
+                    timeProgressBar.setProgress(0);
+                    handleAnswerSelection(View.NO_ID); // Indicate timeout
+                }
+            }.start();
+        }
+    }
+
+    private void cancelTimer() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+            countDownTimer = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cancelTimer(); // Prevent memory leaks
     }
 
     private void moveToNextQuestion() {
@@ -175,34 +239,41 @@ public class QuizActivity extends AppCompatActivity {
         if (currentQuestionIndex < quizQuestions.size()) {
             displayQuestion();
         } else {
-            showFinalScore();
+            showQuizResult();
         }
     }
 
     private void highlightCorrectAnswer(String correctAnswer) {
-        if (optionA.getText().toString().equals(correctAnswer)) {
-            optionA.setBackgroundColor(ContextCompat.getColor(this, R.color.quiz_correct_answer));
-        } else if (optionB.getText().toString().equals(correctAnswer)) {
-            optionB.setBackgroundColor(ContextCompat.getColor(this, R.color.quiz_correct_answer));
-        } else if (optionC.getText().toString().equals(correctAnswer)) {
-            optionC.setBackgroundColor(ContextCompat.getColor(this, R.color.quiz_correct_answer));
-        } else if (optionD.getText().toString().equals(correctAnswer)) {
-            optionD.setBackgroundColor(ContextCompat.getColor(this, R.color.quiz_correct_answer));
+        MaterialButton correctButton = getButtonFromAnswer(correctAnswer);
+        if (correctButton != null) {
+            correctButton.setBackgroundTintList(correctButtonColor);
         }
     }
 
-    private void showFinalScore() {
-        new AlertDialog.Builder(this)
-                .setTitle("Quiz Finished!")
-                .setMessage("Your score: " + correctAnswers + " / " + quizQuestions.size())
-                .setPositiveButton("OK", (dialog, which) -> finish())
-                .setCancelable(false)
-                .show();
+    private MaterialButton getButtonFromAnswer(String answer) {
+        if (optionA.getText().toString().equals(answer)) return optionA;
+        if (optionB.getText().toString().equals(answer)) return optionB;
+        if (optionC.getText().toString().equals(answer)) return optionC;
+        if (optionD.getText().toString().equals(answer)) return optionD;
+        return null;
+    }
+
+    private void showQuizResult() {
+        Intent intent = new Intent(this, QuizResultActivity.class);
+        intent.putExtra(QuizResultActivity.EXTRA_CORRECT_ANSWERS, correctAnswers);
+        intent.putExtra(QuizResultActivity.EXTRA_TOTAL_QUESTIONS, quizQuestions.size());
+        intent.putExtra(QuizResultActivity.EXTRA_DECK_ID, deckId);
+        intent.putParcelableArrayListExtra(QuizResultActivity.EXTRA_QUIZ_QUESTIONS, quizQuestions);
+        startActivity(intent);
+        finish();
     }
 
     private void setOptionsEnabled(boolean enabled) {
         for (int i = 0; i < optionsGroup.getChildCount(); i++) {
-            optionsGroup.getChildAt(i).setEnabled(enabled);
+            MaterialButton button = (MaterialButton) optionsGroup.getChildAt(i);
+             if (!button.isChecked()) {
+                button.setEnabled(enabled);
+            }
         }
     }
 
@@ -210,9 +281,11 @@ public class QuizActivity extends AppCompatActivity {
         optionsGroup.clearChecked();
         for (int i = 0; i < optionsGroup.getChildCount(); i++) {
             MaterialButton button = (MaterialButton) optionsGroup.getChildAt(i);
-            button.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
+            button.setBackgroundTintList(defaultOptionColor);
+            button.setStrokeColor(defaultStrokeColor);
             button.setEnabled(true);
         }
+        optionsGroup.addOnButtonCheckedListener(buttonListener);
     }
 
     @Override

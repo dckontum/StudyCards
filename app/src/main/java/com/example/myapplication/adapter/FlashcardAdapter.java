@@ -27,9 +27,9 @@ import java.util.List;
 
 public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.FlashcardViewHolder> implements Filterable {
 
-    private List<Flashcard> flashcards;
-    private List<Flashcard> flashcardsFull;
-    private DatabaseHelper dbHelper;
+    private final List<Flashcard> flashcards;
+    private final List<Flashcard> flashcardsFull;
+    private final DatabaseHelper dbHelper;
     private final Context context;
     private final ActivityResultLauncher<Intent> editFlashcardLauncher;
 
@@ -76,11 +76,20 @@ public class FlashcardAdapter extends RecyclerView.Adapter<FlashcardAdapter.Flas
                     .setTitle("Delete Flashcard")
                     .setMessage("Are you sure you want to delete this flashcard?")
                     .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                        dbHelper.deleteFlashcard(flashcard.getId());
-                        flashcards.remove(position);
-                        notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, flashcards.size());
-                        Toast.makeText(context, "Flashcard deleted", Toast.LENGTH_SHORT).show();
+                        int currentPosition = holder.getAdapterPosition();
+                        if (currentPosition != RecyclerView.NO_POSITION) {
+                            Flashcard cardToDelete = flashcards.get(currentPosition);
+                            
+                            dbHelper.deleteFlashcard(cardToDelete.getId());
+                            
+                            // Remove from both the filtered list and the full list
+                            flashcards.remove(currentPosition);
+                            flashcardsFull.remove(cardToDelete);
+                            
+                            notifyItemRemoved(currentPosition);
+                            notifyItemRangeChanged(currentPosition, flashcards.size());
+                            Toast.makeText(context, "Flashcard deleted", Toast.LENGTH_SHORT).show();
+                        }
                     })
                     .setNegativeButton(android.R.string.no, null)
                     .setIcon(android.R.drawable.ic_dialog_alert)
