@@ -2,15 +2,9 @@ package com.example.myapplication.ui.quiz;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.View;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -21,8 +15,6 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-
-import java.util.List;
 
 public class QuizSettingsActivity extends AppCompatActivity {
 
@@ -37,17 +29,14 @@ public class QuizSettingsActivity extends AppCompatActivity {
     private String deckName;
     private int maxQuestions;
 
-    // Settings values
     private int selectedQuestions;
-    private int timeLimit = 0; // 0 for off, otherwise in seconds
-    private String reviewOption = "after_each"; // "after_each" or "at_end"
+    private int timeLimit = 0;
+    private String reviewOption = "after_each"; // Default value
 
-    // Views
     private TextView deckNameText, deckCardCountText, selectedQuestionsText;
     private TextInputLayout questionCountLayout;
     private TextInputEditText questionCountInput;
-    private ChipGroup questionCountChips, timeLimitChips;
-    private RadioGroup reviewOptionsGroup;
+    private ChipGroup questionCountChips, timeLimitChips, reviewOptionsChips;
     private MaterialButton startQuizButton;
 
     @Override
@@ -71,6 +60,7 @@ public class QuizSettingsActivity extends AppCompatActivity {
         setupViews();
         updateUiWithDeckInfo();
         setupListeners();
+        validateQuestionChips();
     }
 
     private void setupViews() {
@@ -89,7 +79,7 @@ public class QuizSettingsActivity extends AppCompatActivity {
         questionCountInput = findViewById(R.id.question_count_input);
         questionCountChips = findViewById(R.id.question_count_chips);
         timeLimitChips = findViewById(R.id.time_limit_chips);
-        reviewOptionsGroup = findViewById(R.id.review_options_group);
+        reviewOptionsChips = findViewById(R.id.review_options_chips);
         startQuizButton = findViewById(R.id.button_start_quiz);
     }
 
@@ -97,12 +87,48 @@ public class QuizSettingsActivity extends AppCompatActivity {
         deckNameText.setText(deckName);
         deckCardCountText.setText(maxQuestions + " Cards");
         questionCountLayout.setHint("Custom (Max: " + maxQuestions + ")");
-        selectedQuestions = Math.min(10, maxQuestions);
+        selectedQuestions = Math.min(5, maxQuestions);
         updateSelectedQuestionsText();
     }
 
+    private void validateQuestionChips() {
+        for (int i = 0; i < questionCountChips.getChildCount(); i++) {
+            Chip chip = (Chip) questionCountChips.getChildAt(i);
+            String chipText = chip.getText().toString();
+            if (chipText.equalsIgnoreCase("All Cards")) {
+                chip.setEnabled(maxQuestions > 0);
+                continue;
+            }
+            try {
+                int questionValue = Integer.parseInt(chipText);
+                chip.setEnabled(questionValue <= maxQuestions);
+            } catch (NumberFormatException e) {
+                chip.setEnabled(false);
+            }
+        }
+
+        Chip defaultChip = findChipByText(questionCountChips, String.valueOf(selectedQuestions));
+        if (defaultChip != null && defaultChip.isEnabled()) {
+            questionCountChips.check(defaultChip.getId());
+        } else {
+            Chip largestValidChip = null;
+            for (int i = questionCountChips.getChildCount() - 1; i >= 0; i--) {
+                Chip chip = (Chip) questionCountChips.getChildAt(i);
+                if (chip.isEnabled()) {
+                    largestValidChip = chip;
+                    break;
+                }
+            }
+            if (largestValidChip != null) {
+                questionCountChips.check(largestValidChip.getId());
+                String text = largestValidChip.getText().toString();
+                selectedQuestions = text.equalsIgnoreCase("All Cards") ? maxQuestions : Integer.parseInt(text);
+                updateSelectedQuestionsText();
+            }
+        }
+    }
+
     private void setupListeners() {
-        // Question Count Chips
         questionCountChips.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (checkedIds.isEmpty()) return;
             Chip selectedChip = findViewById(checkedIds.get(0));
@@ -110,11 +136,10 @@ public class QuizSettingsActivity extends AppCompatActivity {
             String text = selectedChip.getText().toString();
             selectedQuestions = text.equalsIgnoreCase("All Cards") ? maxQuestions : Integer.parseInt(text);
             questionCountInput.setText("");
-            questionCountInput.clearFocus(); // Clear focus and hide keyboard
+            questionCountInput.clearFocus();
             updateSelectedQuestionsText();
         });
 
-        // Time Limit Chips
         timeLimitChips.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (checkedIds.isEmpty()) {
                 timeLimit = 0;
@@ -126,21 +151,41 @@ public class QuizSettingsActivity extends AppCompatActivity {
             timeLimit = text.equalsIgnoreCase("Off") ? 0 : Integer.parseInt(text);
         });
 
-        // Review Options
-        reviewOptionsGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.review_after_question) {
-                reviewOption = "after_each";
-            } else if (checkedId == R.id.review_at_end) {
+        reviewOptionsChips.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (checkedIds.isEmpty()) return;
+            if (checkedIds.get(0) == R.id.chip_review_at_end) {
                 reviewOption = "at_end";
+            } else {
+                reviewOption = "after_each";
             }
         });
 
-        // Start Button
         startQuizButton.setOnClickListener(v -> {
-            if (selectedQuestions <= 0) {
+            String customInput = questionCountInput.getText().toString();
+            if (!customInput.isEmpty()) {
+                try {
+                    int customValue = Integer.parseInt(customInput);
+                    if (customValue > maxQuestions || customValue <= 0) {
+                        Toast.makeText(this, "Please enter a number between 1 and " + maxQuestions, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    selectedQuestions = customValue;
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Invalid number format.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
+            if (selectedQuestions <= 0 || selectedQuestions > maxQuestions) {
                 Toast.makeText(this, "Please select a valid number of questions.", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            if (maxQuestions < 4) {
+                Toast.makeText(this, "You need at least 4 cards in this deck to start a quiz.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
             Intent intent = new Intent(QuizSettingsActivity.this, QuizActivity.class);
             intent.putExtra(EXTRA_DECK_ID, deckId);
             intent.putExtra(EXTRA_DECK_NAME, deckName);
@@ -153,6 +198,16 @@ public class QuizSettingsActivity extends AppCompatActivity {
 
     private void updateSelectedQuestionsText() {
         selectedQuestionsText.setText("Selected: " + selectedQuestions + " Questions");
+    }
+
+    private Chip findChipByText(ChipGroup group, String text) {
+        for (int i = 0; i < group.getChildCount(); i++) {
+            Chip chip = (Chip) group.getChildAt(i);
+            if (chip.getText().toString().equals(text)) {
+                return chip;
+            }
+        }
+        return null;
     }
 
     @Override

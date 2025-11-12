@@ -47,8 +47,11 @@
     <color name="bottom_nav_selected">#D1C4E9</color>
     <color name="bottom_nav_unselected">#9E9E9E</color>
 
-    <!-- Quiz Colors -->
+    <!-- Quiz Colors (New) -->
     <color name="quiz_correct_answer">#2ECC71</color>
     <color name="quiz_incorrect_answer">#E74C3C</color>
+    <color name="quiz_option_background_default">#1F1E24</color>
+    <color name="quiz_option_stroke">#7C4DFF</color>
+    <color name="quiz_option_selected_bg">#673AB7</color>
 
 </resources>

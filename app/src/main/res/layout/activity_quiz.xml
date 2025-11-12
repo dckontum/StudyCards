@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/profile_dark_background"
+    android:background="@color/dark_primary_variant"
     tools:context=".ui.quiz.QuizActivity">
 
     <!-- App Bar -->
@@ -12,7 +12,7 @@
         android:id="@+id/appbar_quiz"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/edit_profile_appbar_bg"
+        android:background="@color/dark_primary"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
@@ -23,25 +23,38 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <ProgressBar
+        android:id="@+id/time_progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="100"
+        android:progressTint="@color/profile_icon_accent"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/appbar_quiz"
+        tools:visibility="visible" />
+
     <!-- Content Area -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/appbar_quiz"
+        app:layout_constraintTop_toBottomOf="@id/time_progress_bar"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:padding="20dp">
 
             <TextView
                 android:id="@+id/quiz_progress_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                android:textColor="@color/profile_text_primary"
+                android:textColor="@color/white"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -51,10 +64,9 @@
                 android:id="@+id/quiz_question_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:textColor="@color/white"
+                android:layout_marginTop="8dp"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                android:textColor="@color/profile_text_secondary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/quiz_progress_text"
@@ -69,55 +81,42 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/quiz_question_text"
-                app:selectionRequired="true"
                 app:singleSelection="true">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/option_a"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/Widget.App.QuizOptionButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="60dp"
-                    android:text="Mitochondrion"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    app:cornerRadius="16dp" />
+                    android:paddingVertical="20dp"
+                    android:text="Mitochondrion" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/option_b"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/Widget.App.QuizOptionButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:minHeight="60dp"
-                    android:text="Nucleus"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    app:cornerRadius="16dp" />
+                    android:layout_marginTop="20dp"
+                    android:paddingVertical="20dp"
+                    android:text="Nucleus" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/option_c"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/Widget.App.QuizOptionButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:minHeight="60dp"
-                    android:text="Ribosome"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    app:cornerRadius="16dp" />
+                    android:layout_marginTop="20dp"
+                    android:paddingVertical="20dp"
+                    android:text="Ribosome" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/option_d"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="@style/Widget.App.QuizOptionButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:minHeight="60dp"
-                    android:text="Cell Wall"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    app:cornerRadius="16dp" />
+                    android:layout_marginTop="20dp"
+                    android:paddingVertical="20dp"
+                    android:text="Cell Wall" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 

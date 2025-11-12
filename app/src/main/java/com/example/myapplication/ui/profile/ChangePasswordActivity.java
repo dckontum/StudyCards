@@ -49,6 +49,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         int userId = prefs.getInt("user_id", -1);
 
         if (userId != -1) {
+            // We need the full user object to check the old password
             currentUser = dbHelper.getUserById(userId);
         } else {
             Toast.makeText(this, "User not found!", Toast.LENGTH_SHORT).show();
@@ -82,7 +83,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
             if(hasError) return;
 
-            if (!oldPassword.equals(currentUser.getPassword())) {
+            // Fetch the full user object again to ensure password is correct
+            User userFromDb = dbHelper.getUserById(currentUser.getId());
+            if (userFromDb == null || !oldPassword.equals(userFromDb.getPassword())) {
                 oldPasswordLayout.setError("Incorrect old password");
                 return;
             }
@@ -92,7 +95,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 return;
             }
 
-            dbHelper.updatePassword(currentUser.getId(), newPassword);
+            currentUser.setPassword(newPassword);
+            dbHelper.updateUser(currentUser);
 
             Toast.makeText(this, "Password updated successfully", Toast.LENGTH_SHORT).show();
             finish();
