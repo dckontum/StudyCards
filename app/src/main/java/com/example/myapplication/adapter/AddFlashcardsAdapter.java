@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.flashcard;
+package com.example.myapplication.adapter;
 
 import android.text.Editable;
 import android.text.TextWatcher;

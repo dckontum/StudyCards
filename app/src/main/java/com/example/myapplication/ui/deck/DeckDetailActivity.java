@@ -87,7 +87,7 @@ public class DeckDetailActivity extends AppCompatActivity {
         adapter = new FlashcardAdapter(this, new ArrayList<>(flashcardList), dbHelper, editFlashcardLauncher);
         flashcardsRecyclerView.setAdapter(adapter);
 
-        setupSearchView();
+//        setupSearchView();
         setupListeners();
     }
 
@@ -132,31 +132,31 @@ public class DeckDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void setupSearchView() {
-        // Customize the text color
-        EditText searchEditText = flashcardSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
-        searchEditText.setTextColor(Color.WHITE);
-        searchEditText.setHintTextColor(Color.GRAY);
-
-        // Customize the close button color
-        ImageView closeButton = flashcardSearchView.findViewById(androidx.appcompat.R.id.search_close_btn);
-        if (closeButton != null) {
-            closeButton.setColorFilter(Color.WHITE);
-        }
-
-        flashcardSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
-                return true;
-            }
-        });
-    }
+//    private void setupSearchView() {
+//        // Customize the text color
+//        EditText searchEditText = flashcardSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
+//        searchEditText.setTextColor(Color.WHITE);
+//        searchEditText.setHintTextColor(Color.GRAY);
+//
+//        // Customize the close button color
+//        ImageView closeButton = flashcardSearchView.findViewById(androidx.appcompat.R.id.search_close_btn);
+//        if (closeButton != null) {
+//            closeButton.setColorFilter(Color.WHITE);
+//        }
+//
+//        flashcardSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                adapter.getFilter().filter(newText);
+//                return true;
+//            }
+//        });
+//    }
 
     @Override
     protected void onResume() {
