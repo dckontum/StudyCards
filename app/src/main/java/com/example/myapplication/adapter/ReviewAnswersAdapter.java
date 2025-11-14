@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.quiz;
+package com.example.myapplication.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.data.DatabaseHelper;
 import com.example.myapplication.model.Flashcard;
-import com.example.myapplication.ui.flashcard.AddFlashcardsAdapter;
+import com.example.myapplication.adapter.AddFlashcardsAdapter;
 import com.example.myapplication.ui.study.StudyDeckActivity;
 
 import java.util.ArrayList;

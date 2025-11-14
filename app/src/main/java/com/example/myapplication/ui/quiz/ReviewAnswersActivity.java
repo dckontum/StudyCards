@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.adapter.ReviewAnswersAdapter;
 import com.example.myapplication.model.QuizQuestion;
 
 import java.util.ArrayList;

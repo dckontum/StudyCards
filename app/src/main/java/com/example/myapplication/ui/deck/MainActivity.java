@@ -1,17 +1,11 @@
 package com.example.myapplication.ui.deck;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.ImageView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -106,48 +100,5 @@ public class MainActivity extends AppCompatActivity implements DeckAdapter.OnDec
         Intent intent = new Intent(this, EditDeckActivity.class);
         intent.putExtra(EditDeckActivity.EXTRA_DECK_ID, deckId);
         editDeckLauncher.launch(intent);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) searchItem.getActionView();
-
-        // --- Force-styling the SearchView to be white ---
-        EditText searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
-        if (searchEditText != null) {
-            searchEditText.setTextColor(Color.WHITE);
-            searchEditText.setHintTextColor(Color.GRAY);
-        }
-
-        ImageView searchIcon = searchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
-        if (searchIcon != null) {
-            searchIcon.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
-        }
-
-        ImageView closeIcon = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
-        if (closeIcon != null) {
-            closeIcon.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
-        }
-
-        // --- End of styling ---
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                if (deckAdapter != null) {
-                    deckAdapter.getFilter().filter(newText);
-                }
-                return true;
-            }
-        });
-
-        return true;
     }
 }
