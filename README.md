@@ -1,85 +1,65 @@
-# StudyCards
-#📚 StudyCards
+# 📚 StudyCards
 
-A flashcard learning app built for the PRM392 – Android Development course at FPT University.
+A flashcard learning app built for the **PRM392 – Android Development** course at FPT University.
 
-⭐ Features
-🔹 Flashcards & Decks
+---
 
-Full CRUD for Decks
+## ⭐ **Features**
 
-Full CRUD for Flashcards
+### 🔹 **Flashcards & Decks**
+- Full **CRUD** for Decks  
+- Full **CRUD** for Flashcards  
+- Mark flashcards as **Favorite**  
+- Organized learning by deck  
 
-Mark flashcards as Favorite
+### 🔹 **Study Mode**
+- Flip cards to reveal answers  
+- Study in order or shuffle mode  
 
-Organized learning by deck
+### 🔹 **Quiz Mode**
+- Take quizzes based on selected deck  
+- Optional **countdown timer**  
+- Show answer **after each question** or **after finishing**  
+- **Review Answer** screen after quiz completion  
 
-🔹 Study Mode
+### 🔹 **User Account**
+- Login / Register  
+- Edit Profile  
+- Change Password  
 
-Flip cards to reveal answers
+### 🔹 **UI/UX**
+- Material UI components  
+- RecyclerView for lists  
+- Clean and intuitive interface  
 
-Study in order or shuffle mode
+---
 
-🔹 Quiz Mode
+## 🛠 **Tech Stack**
 
-Take quizzes based on selected deck
+### **Android App**
+- Java  
+- Material Design Components  
+- RecyclerView  
 
-Optional countdown timer
+### **Local Storage**
+- SQLite database  
 
-Show answer after each question or after finishing the quiz
+---
 
-Review Answer screen after quiz completion
+## 🚀 **How to Run**
 
-🔹 User Account
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/StudyCards.git
+2. **Open the project in Android Studio**
 
-Login / Register
+3. **Wait for Gradle sync to complete**
 
-Edit Profile
+4. **Choose an emulator or physical device**
 
-Change Password
+5. **Click Run ▶️ to launch the app**
 
-🔹 UI/UX
-
-Material UI components
-
-RecyclerView for lists
-
-Clean and intuitive interface
-
-🛠 Tech Stack
-Android App (Frontend)
-
-Java
-
-Material Design Components
-
-RecyclerView
-
-Local Storage
-
-SQLite database
-
-🚀 How to Run
-
-Clone the repository
-
-git clone https://github.com/your-username/StudyCards.git
-
-
-Open the project in Android Studio
-
-Wait for Gradle sync to complete
-
-Choose an emulator or physical device
-
-Click Run ▶️ to build and launch the app
-
-📦 Requirements
-
-Android Studio (Flamingo / Hedgehog / Otter or newer)
-
-Java 8+
-
-Minimum SDK: API 24 (Android 7.0)
-
-Works on both emulator and physical devices
+## 📦 **Requirements**
+- Android Studio (Flamingo / Hedgehog / Otter or newer)
+- Java 8+
+- Minimum SDK: API 24 (Android 7.0)
